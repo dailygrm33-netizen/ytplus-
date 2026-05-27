@@ -1,20 +1,9 @@
-name: Remote iOS Build from Windows
-on:
-  workflow_dispatch: # This adds a manual "Start" button on your webpage
-
-jobs:
-  compile-ios:
-    runs-on: macos-14 # Tells GitHub to boot up a virtual Mac server
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
       - name: Compile and Wrap App
         run: |
-          # 1. Compile the code into an iOS binary without requiring paid developer certificates
+          # 1. Compile using your exact explicit project and scheme names
           xcodebuild clean build \
-            -project *.xcodeproj \
-            -scheme $(xcodebuild -list -json | plutil -extract schemes.0 raw -) \
+            -project ytplus-.xcodeproj \
+            -scheme ytplus- \
             -configuration Release \
             -sdk iphoneos \
             CODE_SIGNING_ALLOWED=NO \
@@ -26,9 +15,3 @@ jobs:
 
           # 3. Zip it and rename the extension to .ipa
           zip -r AppBundle.ipa Payload
-
-      - name: Send Finished IPA to Windows Browser
-        uses: actions/upload-artifact@v4
-        with:
-          name: my-completed-ipa
-          path: AppBundle.ipa
